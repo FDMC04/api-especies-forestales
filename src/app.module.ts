@@ -1,6 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RegionsModule } from './regions/regions.module';
+import { FamiliesModule } from './families/families.module';
+import { GenereModule } from './genere/genere.module';
+import { SpeciesModule } from './species/species.module';
+import { CategoriesModule } from './categories/categories.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +21,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    RegionsModule,
+    FamiliesModule,
+    GenereModule,
+    SpeciesModule,
+    CategoriesModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
