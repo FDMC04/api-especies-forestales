@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Family } from './entities/family.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, ILike, In, Repository } from 'typeorm';
 import { CreateFamilyDto } from './dto/create-family.dto';
 import { validate as isUUID } from 'uuid';
 import { UpdateFamilyDto } from './dto/update-family.dto';
@@ -55,6 +55,21 @@ export class FamiliesService {
       throw new BadRequestException(`Incorrect Id`);
     }
     if (!family) throw new NotFoundException(`Family with id: ${id} not found`);
+    return family;
+  }
+
+  async findAllBy(term: string) {
+    if (!term) throw new NotFoundException('Name is required');
+    const family = await this.familiesRepository.find({
+      where: [
+        { scientific_name: ILike(`%${term}%`) },
+        { common_name: ILike(`%${term}%`) },
+      ],
+    });
+
+    if (!family.length) {
+      throw new NotFoundException(`Families with term: ${term} not found`);
+    }
     return family;
   }
 

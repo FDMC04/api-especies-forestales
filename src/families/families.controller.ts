@@ -30,8 +30,13 @@ export class FamiliesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.familiesService.findOne(id);
+  }
+
+  @Get('search/:term')
+  findAllBy(@Param('term') term: string) {
+    return this.familiesService.findAllBy(term);
   }
 
   @Patch(':id')

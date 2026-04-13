@@ -34,6 +34,11 @@ export class GenereController {
     return this.genereService.findOne(id);
   }
 
+  @Get('search/:term')
+  findAllBy(@Param('term') term: string) {
+    return this.genereService.findAllBy(term);
+  }
+
   @Patch(':id')
   @Auth(ValidRoles.admin)
   update(

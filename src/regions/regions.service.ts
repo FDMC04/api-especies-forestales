@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { CreateRegionDto } from './dto/create-region.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, ILike, Repository } from 'typeorm';
 import { RegionImage, Regions } from './entities';
 import { isUUID } from 'class-validator';
 import { UpdateRegionDto } from './dto/update-region.dto';
@@ -72,12 +72,34 @@ export class RegionsService {
     return region;
   }
 
-  async findOnePlain(id: string) {
-    const { images = [], ...rest } = await this.findOne(id);
-    return {
+  async findAllBy(term: string) {
+    if (!term) throw new NotFoundException(`Name is required`);
+    const region = await this.regionsRepository.find({
+      where: {
+        name: ILike(`%${term}%`),
+      },
+    });
+
+    if (!region.length) {
+      throw new NotFoundException(`Region with term: ${term} not found`);
+    }
+
+    return region;
+  }
+
+  async findOnePlain(term: string) {
+    if (isUUID(term)) {
+      const { images = [], ...rest } = await this.findOne(term);
+      return {
+        ...rest,
+        images: images.map((image) => image.url),
+      };
+    }
+    const regions = await this.findAllBy(term);
+    return regions.map(({ images = [], ...rest }) => ({
       ...rest,
       images: images.map((image) => image.url),
-    };
+    }));
   }
 
   async update(id: string, updateRegionDto: UpdateRegionDto) {

@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Genere } from './entities/genere.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateGenereDto } from './dto/create-genere.dto';
 import { validate as isUUID } from 'uuid';
@@ -50,6 +50,21 @@ export class GenereService {
       throw new BadRequestException(`Incorrect Id`);
     }
     if (!genere) throw new NotFoundException(`Genere with id: ${id} not found`);
+    return genere;
+  }
+
+  async findAllBy(term: string) {
+    if (!term) throw new NotFoundException(`Name is required`);
+    const genere = await this.genereRepository.find({
+      where: [
+        { scientific_name: ILike(`%${term}%`) },
+        { common_name: ILike(`%${term}%`) },
+      ],
+    });
+
+    if (!genere.length) {
+      throw new NotFoundException(`Genere with term: ${term} not found`);
+    }
     return genere;
   }
 

@@ -1,6 +1,12 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { Species, SpeciesImage } from './entities';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateSpeciesDto } from './dto/create-species.dto';
 import { validate as isUUID } from 'uuid';
@@ -63,12 +69,35 @@ export class SpeciesService {
     return species;
   }
 
-  async findOnePlain(id: string) {
-    const { images = [], ...rest } = await this.findOne(id);
-    return {
+  async findAllBy(term: string) {
+    if (!term) throw new NotFoundException(`Name is required`);
+    const species = await this.speciesRepository.find({
+      where: [
+        { scientific_name: ILike(`%${term}%`) },
+        { common_name: ILike(`%${term}%`) },
+      ],
+    });
+
+    if (!species.length) {
+      throw new NotFoundException(`Species with term: ${term} not found`);
+    }
+
+    return species;
+  }
+
+  async findOnePlain(term: string) {
+    if (isUUID(term)) {
+      const { images = [], ...rest } = await this.findOne(term);
+      return {
+        ...rest,
+        images: images.map((image) => image.url),
+      };
+    }
+    const species = await this.findAllBy(term);
+    return species.map(({ images = [], ...rest }) => ({
       ...rest,
       images: images.map((image) => image.url),
-    };
+    }));
   }
 
   async update(id: string, updateSpeciesDto: UpdateSpeciesDto) {
