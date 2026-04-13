@@ -5,7 +5,6 @@ import { RegionsModule } from './regions/regions.module';
 import { FamiliesModule } from './families/families.module';
 import { GenereModule } from './genere/genere.module';
 import { SpeciesModule } from './species/species.module';
-import { CategoriesModule } from './categories/categories.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -25,7 +24,6 @@ import { AuthModule } from './auth/auth.module';
     FamiliesModule,
     GenereModule,
     SpeciesModule,
-    CategoriesModule,
     AuthModule,
   ],
 })

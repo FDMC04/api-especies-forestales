@@ -1,5 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { RegionImage } from './region-image.entity';
+import { Family } from 'src/families/entities/family.entity';
 
 @Entity({ name: 'regions' })
 export class Regions {
@@ -43,4 +50,7 @@ export class Regions {
     eager: true,
   })
   images?: RegionImage[];
+
+  @ManyToMany(() => Family, (family) => family.regions)
+  families?: Family[];
 }

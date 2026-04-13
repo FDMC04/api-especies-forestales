@@ -40,4 +40,9 @@ export class CreateRegionDto {
   @IsArray()
   @IsOptional()
   images?: string[];
+
+  @IsString({ each: true })
+  @IsArray()
+  @IsOptional()
+  families?: string[];
 }

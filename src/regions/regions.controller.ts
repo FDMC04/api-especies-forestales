@@ -12,13 +12,14 @@ import { RegionsService } from './regions.service';
 import { CreateRegionDto } from './dto/create-region.dto';
 import { UpdateRegionDto } from './dto/update-region.dto';
 import { Auth } from 'src/auth/decorators';
+import { ValidRoles } from 'src/auth/interfaces';
 
 @Controller('regions')
 export class RegionsController {
   constructor(private readonly regionsService: RegionsService) {}
 
   @Post()
-  @Auth()
+  @Auth(ValidRoles.admin)
   create(@Body() createRegionDto: CreateRegionDto) {
     return this.regionsService.create(createRegionDto);
   }
@@ -34,7 +35,7 @@ export class RegionsController {
   }
 
   @Patch(':id')
-  @Auth()
+  @Auth(ValidRoles.admin)
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateRegionDto: UpdateRegionDto,
@@ -43,7 +44,7 @@ export class RegionsController {
   }
 
   @Delete(':id')
-  @Auth()
+  @Auth(ValidRoles.admin)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.regionsService.remove(id);
   }

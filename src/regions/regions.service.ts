@@ -11,6 +11,7 @@ import { DataSource, Repository } from 'typeorm';
 import { RegionImage, Regions } from './entities';
 import { isUUID } from 'class-validator';
 import { UpdateRegionDto } from './dto/update-region.dto';
+import { Family } from 'src/families/entities/family.entity';
 
 @Injectable()
 export class RegionsService {
@@ -19,20 +20,27 @@ export class RegionsService {
   constructor(
     @InjectRepository(Regions)
     private readonly regionsRepository: Repository<Regions>,
+
     @InjectRepository(RegionImage)
     private readonly regionImageRepository: Repository<RegionImage>,
+
+    @InjectRepository(Family)
+    private readonly familyRepository: Repository<Family>,
 
     private readonly dataSource: DataSource,
   ) {}
 
   async create(createRegionDto: CreateRegionDto) {
     try {
-      const { images = [], ...regionsData } = createRegionDto;
+      const { images = [], families = [], ...regionsData } = createRegionDto;
 
       const region = this.regionsRepository.create({
         ...regionsData,
         images: images.map((image) =>
           this.regionImageRepository.create({ url: image }),
+        ),
+        families: families.map((family) =>
+          this.familyRepository.create({ scientific_name: family }),
         ),
       });
       await this.regionsRepository.save(region);
@@ -73,7 +81,7 @@ export class RegionsService {
   }
 
   async update(id: string, updateRegionDto: UpdateRegionDto) {
-    const { images, ...toUpdate } = updateRegionDto;
+    const { images, families, ...toUpdate } = updateRegionDto;
     const region = await this.regionsRepository.preload({
       id,
       ...toUpdate,
@@ -90,6 +98,12 @@ export class RegionsService {
         await queryRunner.manager.delete(RegionImage, { region: { id } });
         region.images = images.map((images) =>
           this.regionImageRepository.create({ url: images }),
+        );
+      }
+      if (families) {
+        await queryRunner.manager.delete(Family, { region: { id } });
+        region.families = families.map((families) =>
+          this.familyRepository.create({ scientific_name: families }),
         );
       }
       await queryRunner.manager.save(region);
