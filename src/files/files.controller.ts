@@ -43,7 +43,7 @@ export class FilesController {
       throw new BadRequestException('Make sure that file is an image');
     }
     const secureUrl = `${this.configService.get('HOST_API')}/files/region/${file.filename}`;
-    return { secureUrl };
+    return { secureUrl, fileName: file.filename };
   }
 
   @Get('specie/:imageName')
@@ -67,6 +67,6 @@ export class FilesController {
       throw new BadRequestException('Make sure that file is an image');
     }
     const secureUrl = `${this.configService.get('HOST_API')}/files/specie/${file.filename}`;
-    return { secureUrl };
+    return { secureUrl, fileName: file.filename };
   }
 }
