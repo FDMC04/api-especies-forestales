@@ -117,7 +117,7 @@ export class RegionsService {
 
     try {
       if (images) {
-        await queryRunner.manager.delete(RegionImage, { region: { id } });
+        await queryRunner.manager.delete(RegionImage, { regions: { id } });
         region.images = images.map((images) =>
           this.regionImageRepository.create({ url: images }),
         );

@@ -102,12 +102,13 @@ export class SpeciesService {
 
   async update(id: string, updateSpeciesDto: UpdateSpeciesDto) {
     const { images, ...toUpdate } = updateSpeciesDto;
-    const region = await this.speciesRepository.preload({
+    const species = await this.speciesRepository.preload({
       id,
       ...toUpdate,
     });
 
-    if (!region) throw new NotFoundException(`Region with id: ${id} not found`);
+    if (!species)
+      throw new NotFoundException(`species with id: ${id} not found`);
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -115,12 +116,12 @@ export class SpeciesService {
 
     try {
       if (images) {
-        await queryRunner.manager.delete(SpeciesImage, { region: { id } });
-        region.images = images.map((images) =>
+        await queryRunner.manager.delete(SpeciesImage, { species: { id } });
+        species.images = images.map((images) =>
           this.speciesImageRepository.create({ url: images }),
         );
       }
-      await queryRunner.manager.save(region);
+      await queryRunner.manager.save(species);
       await queryRunner.commitTransaction();
       await queryRunner.release();
     } catch (error) {

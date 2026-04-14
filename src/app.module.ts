@@ -6,6 +6,7 @@ import { FamiliesModule } from './families/families.module';
 import { GenereModule } from './genere/genere.module';
 import { SpeciesModule } from './species/species.module';
 import { AuthModule } from './auth/auth.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AuthModule } from './auth/auth.module';
     GenereModule,
     SpeciesModule,
     AuthModule,
+    FilesModule,
   ],
 })
 export class AppModule {}
