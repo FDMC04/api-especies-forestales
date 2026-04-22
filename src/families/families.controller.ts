@@ -39,6 +39,11 @@ export class FamiliesController {
     return this.familiesService.findAllBy(term);
   }
 
+  @Get('region/:id')
+  findAllByRegion(@Param('id', ParseUUIDPipe) id: string) {
+    return this.familiesService.findAllByRegion(id);
+  }
+
   @Patch(':id')
   @Auth(ValidRoles.admin)
   update(

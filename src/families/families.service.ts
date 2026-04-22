@@ -73,6 +73,18 @@ export class FamiliesService {
     return family;
   }
 
+  async findAllByRegion(id: string) {
+    if (!id) throw new NotFoundException('Id is required');
+    const family = await this.familiesRepository.find({
+      where: { regions: { id: id } },
+    });
+
+    if (!family.length) {
+      throw new NotFoundException(`Families with region: ${id} not found`);
+    }
+    return family;
+  }
+
   async update(id: string, updateFamilyDto: UpdateFamilyDto) {
     const { regions, ...familyData } = updateFamilyDto;
     const family = await this.familiesRepository.preload({
