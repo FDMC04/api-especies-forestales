@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -46,6 +47,11 @@ export class FilesController {
     return { secureUrl, fileName: file.filename };
   }
 
+  @Delete('region/:imageName')
+  deleteRegionImage(@Param('imageName') imageName: string) {
+    return this.filesService.deleteRegionImage(imageName);
+  }
+
   @Get('specie/:imageName')
   findSpecieImage(@Res() res: Response, @Param('imageName') imageName: string) {
     const path = this.filesService.getStaticSpecieImage(imageName);
@@ -68,5 +74,10 @@ export class FilesController {
     }
     const secureUrl = `${this.configService.get('HOST_API')}/files/specie/${file.filename}`;
     return { secureUrl, fileName: file.filename };
+  }
+
+  @Delete('specie/:imageName')
+  deleteSpecieImage(@Param('imageName') imageName: string) {
+    return this.filesService.deleteSpecieImage(imageName);
   }
 }

@@ -11,6 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateSpeciesDto } from './dto/create-species.dto';
 import { validate as isUUID } from 'uuid';
 import { UpdateSpeciesDto } from './dto/update-species.dto';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class SpeciesService {
@@ -25,6 +26,7 @@ export class SpeciesService {
 
     // @InjectRepository(Family)
     // private readonly familyRepository: Repository<Family>,
+    private readonly filesService: FilesService,
 
     private readonly dataSource: DataSource,
   ) {}
@@ -49,7 +51,7 @@ export class SpeciesService {
 
   async findAll() {
     const species = await this.speciesRepository.find({
-      relations: { images: true },
+      relations: { images: true, genere: true },
     });
     return species.map(({ images, ...rest }) => ({
       ...rest,
@@ -60,7 +62,10 @@ export class SpeciesService {
   async findOne(id: string) {
     let species: Species | null;
     if (isUUID(id)) {
-      species = await this.speciesRepository.findOneBy({ id: id });
+      species = await this.speciesRepository.findOne({
+        where: { id },
+        relations: { genere: true },
+      });
     } else {
       throw new BadRequestException(`Incorrect Id`);
     }
@@ -133,6 +138,11 @@ export class SpeciesService {
 
   async remove(id: string) {
     const species = await this.findOne(id);
+    if (species.images?.length) {
+      species.images.forEach((image) => {
+        this.filesService.deleteSpecieImage(image.url);
+      });
+    }
     await this.speciesRepository.remove(species);
   }
 

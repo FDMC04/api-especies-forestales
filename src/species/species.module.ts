@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Genere } from 'src/genere/entities/genere.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { Species, SpeciesImage } from './entities';
+import { FilesModule } from 'src/files/files.module';
 
 @Module({
   controllers: [SpeciesController],
@@ -12,6 +13,7 @@ import { Species, SpeciesImage } from './entities';
   imports: [
     TypeOrmModule.forFeature([Species, SpeciesImage, Genere]),
     AuthModule,
+    FilesModule,
   ],
   exports: [SpeciesService, TypeOrmModule],
 })

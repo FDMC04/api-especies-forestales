@@ -38,14 +38,19 @@ export class GenereService {
   }
 
   async findAll() {
-    const generes = await this.genereRepository.find();
+    const generes = await this.genereRepository.find({ relations: ['family'] });
     return generes;
   }
 
   async findOne(id: string) {
     let genere: Genere | null;
     if (isUUID(id)) {
-      genere = await this.genereRepository.findOneBy({ id: id });
+      genere = await this.genereRepository.findOne({
+        where: { id },
+        relations: {
+          family: true,
+        },
+      });
     } else {
       throw new BadRequestException(`Incorrect Id`);
     }

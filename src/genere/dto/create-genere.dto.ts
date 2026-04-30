@@ -15,7 +15,7 @@ export class CreateGenereDto {
 
   @IsString({ each: true })
   @IsArray()
-  characterisitc: string[];
+  characteristic: string[];
 
   @IsString()
   family: Family;

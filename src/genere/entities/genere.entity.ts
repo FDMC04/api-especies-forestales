@@ -23,7 +23,7 @@ export class Genere {
   @Column('text', {
     array: true,
   })
-  characterisitc: string[];
+  characteristic: string[];
 
   @ManyToOne(() => Family, (family) => family.genere)
   family: Family;

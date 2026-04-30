@@ -12,6 +12,7 @@ import { RegionImage, Regions } from './entities';
 import { isUUID } from 'class-validator';
 import { UpdateRegionDto } from './dto/update-region.dto';
 import { Family } from 'src/families/entities/family.entity';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class RegionsService {
@@ -26,6 +27,8 @@ export class RegionsService {
 
     @InjectRepository(Family)
     private readonly familyRepository: Repository<Family>,
+
+    private readonly filesService: FilesService,
 
     private readonly dataSource: DataSource,
   ) {}
@@ -140,6 +143,11 @@ export class RegionsService {
 
   async remove(id: string) {
     const region = await this.findOne(id);
+    if (region.images?.length) {
+      region.images.forEach((image) => {
+        this.filesService.deleteRegionImage(image.url);
+      });
+    }
     await this.regionsRepository.remove(region);
   }
 
